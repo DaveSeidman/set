@@ -1,0 +1,46 @@
+{
+  "name": "set-game-2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "vite",
+    "build": "vite build"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "sass": "^1.77.6",
+    "vite": "^5.3.1"
+  },
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-react": "^7.34.2",
+    "stylelint": "^16.6.1"
+  },
+  "eslintConfig": {
+    "extends": "airbnb",
+    "env": {
+      "es6": true
+    },
+    "rules": {
+      "no-console": 0,
+      "no-restricted-globals": 0,
+      "react/no-danger": 0,
+      "prefer-destructuring": 0,
+      "no-param-reassign": 0,
+      "object-curly-newline": 0,
+      "max-len": 0,
+      "no-underscore-dangle": 0,
+      "newline-per-chained-call": 0,
+      "jsx-a11y/click-events-have-key-events": 0,
+      "jsx-a11y/no-static-element-interactions": 0,
+      "jsx-a11y/alt-text": 0
+    }
+  }
+}
