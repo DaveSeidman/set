@@ -1,26 +1,27 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import './index.scss';
 
+let cards = [];
+let cardsInPlay = [];
+let sets = [];
+
 function App() {
-  const [cards, setCards] = useState([]);
-  const [cardsInPlay, setCardsInPlay] = useState([]);
-  const [sets, setSets] = useState([]);
   const createDeck = () => {
-    const cards = [];
+    const nextCards = [];
     for (let amount = 0; amount < 3; amount += 1) {
       for (let color = 0; color < 3; color += 1) {
         for (let shape = 0; shape < 3; shape += 1) {
           for (let shade = 0; shade < 3; shade += 1) {
-            cards.push({ amount, color, shape, shade, inSet: false });
+            nextCards.push({ amount, color, shape, shade, inSet: false });
           }
         }
       }
     }
-    return cards;
+    return nextCards;
   };
 
   const shuffle = (array) => {
-    for (let i = array.length - 1; i > 0; i--) {
+    for (let i = array.length - 1; i > 0; i -= 1) {
       const j = Math.floor(Math.random() * (i + 1));
       [array[i], array[j]] = [array[j], array[i]];
     }
@@ -31,8 +32,8 @@ function App() {
     const newCardsInPlay = cards.slice(0, 12);
     const remainingCards = cards.slice(12);
 
-    setCardsInPlay(newCardsInPlay);
-    setCards(remainingCards);
+    cardsInPlay = newCardsInPlay;
+    cards = remainingCards;
   };
 
   const findSets = () => {
@@ -77,24 +78,35 @@ function App() {
       const allShadesSameOrDifferent = allSameOrDifferent([set[0].card, set[1].card, set[2].card], 'shade');
       if (allAmountsSameOrDifferent && allColorsSameOrDifferent && allShapesSameOrDifferent && allShadesSameOrDifferent) actualSets.push(set);
     }
-    setSets(actualSets);
+    sets = actualSets;
   };
 
   const showSet = () => {
     const randomSet = sets[Math.floor(Math.random() * sets.length)];
-    setCardsInPlay((prevSets) => {
-      const nextCards = [...prevSets];
-      nextCards.forEach((card) => { card.inSet = false; });
-      nextCards[randomSet[0].index].inSet = true;
-      nextCards[randomSet[1].index].inSet = true;
-      nextCards[randomSet[2].index].inSet = true;
-      return nextCards;
+    cardsInPlay.forEach((card) => { card.inSet = false; });
+    randomSet.forEach(({ index }) => {
+      cardsInPlay[index].inSet = true;
     });
-    // console.log(randomSet);
   };
 
   useEffect(() => {
-    setCards(shuffle(createDeck()));
+    const inputs = [];
+    const outputs = [];
+    for (let i = 0; i < 100; i += 1) {
+      cards = shuffle(createDeck());
+      dealCards();
+      findSets();
+      if (sets.length) {
+        const input = cardsInPlay.map(({ amount, color, shape, shade }) => `${amount}${color}${shape}${shade}`);
+        const output = sets[0].map((card) => card.index);
+        inputs.push(input);
+        outputs.push(output);
+      }
+      // console.log(input, output);
+      // console.log(JSON.stringify(sets));
+    }
+
+    console.log(JSON.stringify(outputs));
   }, []);
 
   return (
@@ -102,15 +114,15 @@ function App() {
       <h1>SET!</h1>
       <div className="cards">
         {cardsInPlay.map(({ amount, color, shape, shade, inSet }, index) => (
-          <div className={`cards-card color-${color} ${inSet ? 'selected' : ''}`}>
-            {Array.from({ length: amount + 1 }).map(() => (
-              <img className={`color-${color}`} src={`${shape}${shade}.svg`} />
+          <div key={index} className={`cards-card color-${color} ${inSet ? 'selected' : ''}`}>
+            {Array.from({ length: amount + 1 }).map((_, i) => (
+              <img key={i} className={`color-${color}`} src={`${shape}${shade}.svg`} alt={`${shape} ${shade}`} />
             ))}
           </div>
         ))}
       </div>
 
-      <button type="button" onClick={() => { setCards(shuffle(cards)); }}>Shuffle</button>
+      <button type="button" onClick={() => { cards = shuffle(cards); }}>Shuffle</button>
       <button type="button" onClick={dealCards}>Deal</button>
       <button type="button" onClick={findSets}>Find Sets</button>
       <button type="button" onClick={showSet}>Show Set</button>
